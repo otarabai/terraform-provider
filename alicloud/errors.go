@@ -181,6 +181,9 @@ const (
 	FunctionNotFound = "FunctionNotFound"
 	TriggerNotFound  = "TriggerNotFound"
 	AccessDenied     = "AccessDenied"
+
+	// kv-store
+	InvalidRKVInstanceIdNotFound = "InvalidInstanceId.NotFound"
 )
 
 var SlbIsBusy = []string{"SystemBusy", "OperationBusy", "ServiceIsStopping", "BackendServer.configuring", "ServiceIsConfiguring"}
