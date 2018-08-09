@@ -1,19 +1,19 @@
 ---
 layout: "alicloud"
-page_title: "Alicloud: alicloud_rkv_instance"
-sidebar_current: "docs-alicloud-resource-rkv-instance"
+page_title: "Alicloud: alicloud_kvstore_instance"
+sidebar_current: "docs-alicloud-resource-kvstore-instance"
 description: |-
   Provides an ApsaraDB Redis / Memcache instance resource.
 ---
 
-# alicloud\_rkv\_instance
+# alicloud\_kvstore\_instance
 
 Provides an ApsaraDB Redis / Memcache instance resource. A DB instance is an isolated database environment in the cloud. It can be associated with IP whitelists and backup configuration which are separate resource providers.
 
 ## Example Usage
 
 ```
-resource "alicloud_rkv_instance" "default" {
+resource "alicloud_kvstore_instance" "default" {
   instance_class = "redis.master.small.default"
   instance_name  = "myredis"
   password       = "Passw0rd"
@@ -51,8 +51,8 @@ For more information, see [Instance type table](https://www.alibabacloud.com/hel
 
 ## Import
 
-RKV instance can be imported using the id, e.g.
+KVStore instance can be imported using the id, e.g.
 
 ```
-$ terraform import alicloud_rkv_instance.example rm-abc12345678
+$ terraform import alicloud_kvstore_instance.example rm-abc12345678
 ```

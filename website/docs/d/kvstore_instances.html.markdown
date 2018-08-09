@@ -1,20 +1,20 @@
 ---
 layout: "alicloud"
-page_title: "Alicloud: alicloud_rkv_instances"
+page_title: "Alicloud: alicloud_kvstore_instances"
 sidebar_current: "docs-alicloud-datasource-rkv-instances"
 description: |-
-    Provides a collection of RKV instances according to the specified filters.
+    Provides a collection of kvstore instances according to the specified filters.
 ---
 
 # alicloud\_db\_instances
 
-The `alicloud_rkv_instances` data source provides a collection of RKV instances available in Alicloud account.
+The `alicloud_kvstore_instances` data source provides a collection of kvstore instances available in Alicloud account.
 Filters support regular expression for the instance name, searches by tags, and other filters which are listed below.
 
 ## Example Usage
 
 ```
-data "alicloud_rkv_instances" "dbs" {
+data "alicloud_kvstore_instances" "dbs" {
   name_regex = "data-\\d+"
   status     = "Running"
   tags       = <<EOF

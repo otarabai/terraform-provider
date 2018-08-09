@@ -1,21 +1,21 @@
 
 ---
 layout: "alicloud"
-page_title: "Alicloud: alicloud_rkv_security_ips"
-sidebar_current: "docs-alicloud-resource-rkv-security_ips"
+page_title: "Alicloud: alicloud_kvstore_security_ips"
+sidebar_current: "docs-alicloud-resource-kvstore-security_ips"
 description: |-
   Set the instance's IP whitelable list.
 ---
 
-# alicloud\_rkv\_security_ips
+# alicloud\_kvstore\_security_ips
 
 Set the instance's IP whitelable list.
 
 ## Example Usage
 
 ```
-resource "alicloud_rkv_security_ips" "rediswhitelist" {
-  instance_id         = "${alicloud_rkv_instance.myredis.id}"
+resource "alicloud_kvstore_security_ips" "rediswhitelist" {
+  instance_id         = "${alicloud_kvstore_instance.myredis.id}"
   security_ips        = ["1.1.1.1", "2.2.2.2", "3.3.3.3"]
   security_group_name = "mysecgroup"
 }
@@ -38,8 +38,8 @@ The following attributes are exported:
 
 ## Import
 
-RKV security ips can be imported using the id, e.g.
+KVStore security ips can be imported using the id, e.g.
 
 ```
-$ terraform import alicloud_rkv_security_ips.example rm-abc12345678    
+$ terraform import alicloud_kvstore_security_ips.example rm-abc12345678    
 ```

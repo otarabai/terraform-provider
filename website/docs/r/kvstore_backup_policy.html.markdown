@@ -1,21 +1,21 @@
 
 ---
 layout: "alicloud"
-page_title: "Alicloud: alicloud_rkv_backup_policy"
-sidebar_current: "docs-alicloud-resource-rkv-backup_policy"
+page_title: "Alicloud: alicloud_kvstore_backup_policy"
+sidebar_current: "docs-alicloud-resource-kvstore-backup_policy"
 description: |-
   Provides a backup policy for ApsaraDB Redis / Memcache instance resource.
 ---
 
-# alicloud\_rkv\_backup_policy
+# alicloud\_kvstore\_backup_policy
 
 Provides a backup policy for ApsaraDB Redis / Memcache instance resource. 
 
 ## Example Usage
 
 ```
-resource "alicloud_rkv_backup_policy" "redisbackup" {
-  instance_id             = "${alicloud_rkv_instance.myredis.id}"
+resource "alicloud_kvstore_backup_policy" "redisbackup" {
+  instance_id             = "${alicloud_kvstore_instance.myredis.id}"
   preferred_backup_time   = "00:00Z-04:00Z"
   preferred_backup_period = "Friday"
 }
@@ -38,8 +38,8 @@ The following attributes are exported:
 
 ## Import
 
-RKV backup policy can be imported using the id, e.g.
+KVStore backup policy can be imported using the id, e.g.
 
 ```
-$ terraform import alicloud_rkv_backup_policy.example rm-abc12345678    
+$ terraform import alicloud_kvstore_backup_policy.example rm-abc12345678    
 ```
