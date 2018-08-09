@@ -31,7 +31,7 @@ func (client *AliyunClient) WaitForRKVInstance(instanceId string, status Status,
 	}
 	for {
 		instance, err := client.DescribeRKVInstanceById(instanceId)
-		if err != nil && !IsExceptedError(err, InvalidRKVInstanceIdNotFound) {
+		if err != nil && !IsExceptedError(err, InvalidKVStoreInstanceIdNotFound) {
 			return err
 		}
 
@@ -47,12 +47,4 @@ func (client *AliyunClient) WaitForRKVInstance(instanceId string, status Status,
 		time.Sleep(DefaultIntervalMedium * time.Second)
 	}
 	return nil
-}
-
-func NotFoundRKVInstance(err error) bool {
-	if IsExceptedError(err, InvalidRKVInstanceIdNotFound) {
-		return true
-	}
-
-	return false
 }

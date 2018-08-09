@@ -10,12 +10,12 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceAlicloudRKVSecurityIPs() *schema.Resource {
+func resourceAlicloudKVStoreSecurityIPs() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAlicloudRKVSecurityIPsCreate,
-		Read:   resourceAlicloudRKVSecurityIPsRead,
-		Update: resourceAlicloudRKVSecurityIPsUpdate,
-		Delete: resourceAlicloudRKVSecurityIPsDelete,
+		Create: resourceAlicloudKVStoreSecurityIPsCreate,
+		Read:   resourceAlicloudKVStoreSecurityIPsRead,
+		Update: resourceAlicloudKVStoreSecurityIPsUpdate,
+		Delete: resourceAlicloudKVStoreSecurityIPsDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
@@ -38,7 +38,7 @@ func resourceAlicloudRKVSecurityIPs() *schema.Resource {
 	}
 }
 
-func resourceAlicloudRKVSecurityIPsCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceAlicloudKVStoreSecurityIPsCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*AliyunClient)
 	conn := client.rkvconn
 
@@ -65,10 +65,10 @@ func resourceAlicloudRKVSecurityIPsCreate(d *schema.ResourceData, meta interface
 	// A security ip whitelist does not have a native IP.
 	d.SetId(fmt.Sprintf("%s%s%s", request.InstanceId, COLON_SEPARATED, request.SecurityIpGroupName))
 
-	return resourceAlicloudRKVSecurityIPsRead(d, meta)
+	return resourceAlicloudKVStoreSecurityIPsRead(d, meta)
 }
 
-func resourceAlicloudRKVSecurityIPsRead(d *schema.ResourceData, meta interface{}) error {
+func resourceAlicloudKVStoreSecurityIPsRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*AliyunClient)
 	conn := client.rkvconn
 	instanceId := strings.Split(d.Id(), COLON_SEPARATED)[0]
@@ -78,11 +78,11 @@ func resourceAlicloudRKVSecurityIPsRead(d *schema.ResourceData, meta interface{}
 	request.InstanceId = instanceId
 	attribs, err := conn.DescribeSecurityIps(request)
 	if err != nil {
-		if NotFoundRKVInstance(err) {
+		if IsExceptedError(err, InvalidKVStoreInstanceIdNotFound) {
 			d.SetId("")
 			return nil
 		}
-		return fmt.Errorf("Error Describe RKV Security IPs: %#v", err)
+		return fmt.Errorf("Error Describe KVStore Security IPs: %#v", err)
 	}
 
 	if attribs == nil || len(attribs.SecurityIpGroups.SecurityIpGroup) == 0 {
@@ -101,7 +101,7 @@ func resourceAlicloudRKVSecurityIPsRead(d *schema.ResourceData, meta interface{}
 	return fmt.Errorf("Security Group %v does not exist", secGroupName)
 }
 
-func resourceAlicloudRKVSecurityIPsUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceAlicloudKVStoreSecurityIPsUpdate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*AliyunClient)
 	conn := client.rkvconn
 	instanceId := strings.Split(d.Id(), COLON_SEPARATED)[0]
@@ -121,10 +121,10 @@ func resourceAlicloudRKVSecurityIPsUpdate(d *schema.ResourceData, meta interface
 		}
 	}
 
-	return resourceAlicloudRKVSecurityIPsRead(d, meta)
+	return resourceAlicloudKVStoreSecurityIPsRead(d, meta)
 }
 
-func resourceAlicloudRKVSecurityIPsDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceAlicloudKVStoreSecurityIPsDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*AliyunClient)
 	conn := client.rkvconn
 	instanceId := strings.Split(d.Id(), COLON_SEPARATED)[0]

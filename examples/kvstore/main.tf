@@ -1,4 +1,4 @@
-data "alicloud_rkv_instances" "rkv_instance" {
+data "alicloud_kvstore_instances" "rkv_instance" {
   output_file = "out.dat"
 }
 
@@ -22,21 +22,21 @@ resource "alicloud_vswitch" "vswitch" {
   vpc_id            = "${var.vpc_id == "" ? alicloud_vpc.vpc.id : var.vpc_id}"
 }
 
-resource "alicloud_rkv_instance" "myredis" {
+resource "alicloud_kvstore_instance" "myredis" {
   instance_class = "${var.instance_class}"
   instance_name  = "${var.instance_name}"
   password       = "${var.password}"
   vswitch_id     = "${var.vswitch_id == "" ? alicloud_vswitch.vswitch.id : var.vswitch_id}"
 }
 
-resource "alicloud_rkv_security_ips" "rediswhitelist" {
-  instance_id         = "${alicloud_rkv_instance.myredis.id}"
+resource "alicloud_kvstore_security_ips" "rediswhitelist" {
+  instance_id         = "${alicloud_kvstore_instance.myredis.id}"
   security_ips        = ["1.1.1.1", "2.2.2.2", "3.3.3.3"]
   security_group_name = "mysecgroup"
 }
 
-resource "alicloud_rkv_backup_policy" "redisbackup" {
-  instance_id   = "${alicloud_rkv_instance.myredis.id}"
+resource "alicloud_kvstore_backup_policy" "redisbackup" {
+  instance_id   = "${alicloud_kvstore_instance.myredis.id}"
   backup_time   = "03:00Z-04:00Z"
   backup_period = ["Monday", "Wednesday", "Friday"]
 }

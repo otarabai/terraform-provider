@@ -8,9 +8,9 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func dataSourceAlicloudRKVInstances() *schema.Resource {
+func dataSourceAlicloudKVStoreInstances() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceAlicloudRKVInstancesRead,
+		Read: dataSourceAlicloudKVStoreInstancesRead,
 
 		Schema: map[string]*schema.Schema{
 			"name_regex": {
@@ -147,7 +147,7 @@ func dataSourceAlicloudRKVInstances() *schema.Resource {
 	}
 }
 
-func dataSourceAlicloudRKVInstancesRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceAlicloudKVStoreInstancesRead(d *schema.ResourceData, meta interface{}) error {
 	conn := meta.(*AliyunClient).rkvconn
 
 	args := r_kvstore.CreateDescribeInstancesRequest()
@@ -193,10 +193,10 @@ func dataSourceAlicloudRKVInstancesRead(d *schema.ResourceData, meta interface{}
 		args.PageNumber = args.PageNumber + requests.NewInteger(1)
 	}
 
-	return rkvInstancesDescription(d, dbi)
+	return kvstoreInstancesDescription(d, dbi)
 }
 
-func rkvInstancesDescription(d *schema.ResourceData, dbi []r_kvstore.KVStoreInstance) error {
+func kvstoreInstancesDescription(d *schema.ResourceData, dbi []r_kvstore.KVStoreInstance) error {
 	var ids []string
 	var s []map[string]interface{}
 

@@ -10,12 +10,12 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceAlicloudRKVBackupPolicy() *schema.Resource {
+func resourceAlicloudKVStoreBackupPolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAlicloudRKVBackupPolicyCreate,
-		Read:   resourceAlicloudRKVBackupPolicyRead,
-		Update: resourceAlicloudRKVBackupPolicyUpdate,
-		Delete: resourceAlicloudRKVBackupPolicyDelete,
+		Create: resourceAlicloudKVStoreBackupPolicyCreate,
+		Read:   resourceAlicloudKVStoreBackupPolicyRead,
+		Update: resourceAlicloudKVStoreBackupPolicyUpdate,
+		Delete: resourceAlicloudKVStoreBackupPolicyDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
@@ -43,7 +43,7 @@ func resourceAlicloudRKVBackupPolicy() *schema.Resource {
 	}
 }
 
-func resourceAlicloudRKVBackupPolicyCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceAlicloudKVStoreBackupPolicyCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*AliyunClient)
 	conn := client.rkvconn
 
@@ -68,10 +68,10 @@ func resourceAlicloudRKVBackupPolicyCreate(d *schema.ResourceData, meta interfac
 	// A security ip whitelist does not have a native IP.
 	d.SetId(request.InstanceId)
 
-	return resourceAlicloudRKVBackupPolicyRead(d, meta)
+	return resourceAlicloudKVStoreBackupPolicyRead(d, meta)
 }
 
-func resourceAlicloudRKVBackupPolicyRead(d *schema.ResourceData, meta interface{}) error {
+func resourceAlicloudKVStoreBackupPolicyRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*AliyunClient)
 	conn := client.rkvconn
 	instanceID := d.Id()
@@ -80,7 +80,7 @@ func resourceAlicloudRKVBackupPolicyRead(d *schema.ResourceData, meta interface{
 	request.InstanceId = instanceID
 	policy, err := conn.DescribeBackupPolicy(request)
 	if err != nil {
-		if NotFoundRKVInstance(err) {
+		if IsExceptedError(err, InvalidKVStoreInstanceIdNotFound) {
 			d.SetId("")
 			return nil
 		}
@@ -98,7 +98,7 @@ func resourceAlicloudRKVBackupPolicyRead(d *schema.ResourceData, meta interface{
 	return nil
 }
 
-func resourceAlicloudRKVBackupPolicyUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceAlicloudKVStoreBackupPolicyUpdate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*AliyunClient)
 	conn := client.rkvconn
 	update := false
@@ -123,10 +123,10 @@ func resourceAlicloudRKVBackupPolicyUpdate(d *schema.ResourceData, meta interfac
 		}
 	}
 
-	return resourceAlicloudRKVBackupPolicyRead(d, meta)
+	return resourceAlicloudKVStoreBackupPolicyRead(d, meta)
 }
 
-func resourceAlicloudRKVBackupPolicyDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceAlicloudKVStoreBackupPolicyDelete(d *schema.ResourceData, meta interface{}) error {
 	// There is no explicit delete, only update with modified backup policy
 	return nil
 }

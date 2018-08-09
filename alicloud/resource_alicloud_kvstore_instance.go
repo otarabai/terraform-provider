@@ -11,12 +11,12 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceAlicloudRKVInstance() *schema.Resource {
+func resourceAlicloudKVStoreInstance() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAlicloudRKVInstanceCreate,
-		Read:   resourceAlicloudRKVInstanceRead,
-		Update: resourceAlicloudRKVInstanceUpdate,
-		Delete: resourceAlicloudRKVInstanceDelete,
+		Create: resourceAlicloudKVStoreInstanceCreate,
+		Read:   resourceAlicloudKVStoreInstanceRead,
+		Update: resourceAlicloudKVStoreInstanceUpdate,
+		Delete: resourceAlicloudKVStoreInstanceDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
@@ -119,11 +119,11 @@ func resourceAlicloudRKVInstance() *schema.Resource {
 	}
 }
 
-func resourceAlicloudRKVInstanceCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceAlicloudKVStoreInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*AliyunClient)
 	conn := client.rkvconn
 
-	request, err := buildRKVCreateRequest(d, meta)
+	request, err := buildKVStoreCreateRequest(d, meta)
 	if err != nil {
 		return err
 	}
@@ -142,10 +142,10 @@ func resourceAlicloudRKVInstanceCreate(d *schema.ResourceData, meta interface{})
 		return fmt.Errorf("WaitForInstance %s got error: %#v", Running, err)
 	}
 
-	return resourceAlicloudRKVInstanceRead(d, meta)
+	return resourceAlicloudKVStoreInstanceRead(d, meta)
 }
 
-func resourceAlicloudRKVInstanceUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceAlicloudKVStoreInstanceUpdate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*AliyunClient)
 	conn := client.rkvconn
 	d.Partial(true)
@@ -185,14 +185,14 @@ func resourceAlicloudRKVInstanceUpdate(d *schema.ResourceData, meta interface{})
 	}
 
 	d.Partial(false)
-	return resourceAlicloudDBInstanceRead(d, meta)
+	return resourceAlicloudKVStoreInstanceRead(d, meta)
 }
 
-func resourceAlicloudRKVInstanceRead(d *schema.ResourceData, meta interface{}) error {
+func resourceAlicloudKVStoreInstanceRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*AliyunClient)
 	instance, err := client.DescribeRKVInstanceById(d.Id())
 	if err != nil {
-		if NotFoundRKVInstance(err) {
+		if IsExceptedError(err, InvalidKVStoreInstanceIdNotFound) {
 			d.SetId("")
 			return nil
 		}
@@ -212,12 +212,12 @@ func resourceAlicloudRKVInstanceRead(d *schema.ResourceData, meta interface{}) e
 	return nil
 }
 
-func resourceAlicloudRKVInstanceDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceAlicloudKVStoreInstanceDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*AliyunClient)
 
 	instance, err := client.DescribeRKVInstanceById(d.Id())
 	if err != nil {
-		if NotFoundRKVInstance(err) {
+		if IsExceptedError(err, InvalidKVStoreInstanceIdNotFound) {
 			return nil
 		}
 		return fmt.Errorf("Error Describe DB InstanceAttribute: %#v", err)
@@ -232,7 +232,7 @@ func resourceAlicloudRKVInstanceDelete(d *schema.ResourceData, meta interface{})
 		_, err := client.rkvconn.DeleteInstance(request)
 
 		if err != nil {
-			if NotFoundRKVInstance(err) {
+			if IsExceptedError(err, InvalidKVStoreInstanceIdNotFound) {
 				return nil
 			}
 			return resource.RetryableError(fmt.Errorf("Delete DB instance timeout and got an error: %#v", err))
@@ -240,7 +240,7 @@ func resourceAlicloudRKVInstanceDelete(d *schema.ResourceData, meta interface{})
 
 		instance, err := client.DescribeRKVInstanceById(d.Id())
 		if err != nil {
-			if NotFoundRKVInstance(err) {
+			if IsExceptedError(err, InvalidKVStoreInstanceIdNotFound) {
 				return nil
 			}
 			return resource.NonRetryableError(fmt.Errorf("Error Describe DB InstanceAttribute: %#v", err))
@@ -253,7 +253,7 @@ func resourceAlicloudRKVInstanceDelete(d *schema.ResourceData, meta interface{})
 	})
 }
 
-func buildRKVCreateRequest(d *schema.ResourceData, meta interface{}) (*r_kvstore.CreateInstanceRequest, error) {
+func buildKVStoreCreateRequest(d *schema.ResourceData, meta interface{}) (*r_kvstore.CreateInstanceRequest, error) {
 	client := meta.(*AliyunClient)
 	request := r_kvstore.CreateCreateInstanceRequest()
 	request.InstanceName = Trim(d.Get("instance_name").(string))
