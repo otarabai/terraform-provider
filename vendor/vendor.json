@@ -3,6 +3,10 @@
 	"ignore": "",
 	"package": [
 		{
+			"path": "github.com/alibaba-cloud-sdk-go/services/r-kvstore",
+			"revision": ""
+		},
+		{
 			"path": "github.com/aliyun/alibaba-cloud-sdk-go/integration",
 			"revision": ""
 		},
@@ -199,6 +203,12 @@
 		{
 			"path": "github.com/aliyun/alibaba-cloud-sdk-go/services/push",
 			"revision": ""
+		},
+		{
+			"checksumSHA1": "twomjDIwJcYJioY7OmOnsoDapLE=",
+			"path": "github.com/aliyun/alibaba-cloud-sdk-go/services/r-kvstore",
+			"revision": "c3d886725a300a08a5868cb2b477e8bae0f1e2ca",
+			"revisionTime": "2018-08-08T08:48:09Z"
 		},
 		{
 			"path": "github.com/aliyun/alibaba-cloud-sdk-go/services/ram",
