@@ -214,7 +214,7 @@ func resourceAlicloudKVStoreInstanceDelete(d *schema.ResourceData, meta interfac
 
 	instance, err := client.DescribeRKVInstanceById(d.Id())
 	if err != nil {
-		if IsExceptedError(err, InvalidKVStoreInstanceIdNotFound) {
+		if NotFoundError(err) {
 			return nil
 		}
 		return fmt.Errorf("Error Describe DB InstanceAttribute: %#v", err)
@@ -237,7 +237,7 @@ func resourceAlicloudKVStoreInstanceDelete(d *schema.ResourceData, meta interfac
 
 		instance, err := client.DescribeRKVInstanceById(d.Id())
 		if err != nil {
-			if IsExceptedError(err, InvalidKVStoreInstanceIdNotFound) {
+			if NotFoundError(err) {
 				return nil
 			}
 			return resource.NonRetryableError(fmt.Errorf("Error Describe DB InstanceAttribute: %#v", err))
