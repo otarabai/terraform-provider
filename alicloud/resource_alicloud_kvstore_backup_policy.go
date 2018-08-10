@@ -133,7 +133,7 @@ func resourceAlicloudKVStoreBackupPolicyDelete(d *schema.ResourceData, meta inte
 	request := r_kvstore.CreateModifyBackupPolicyRequest()
 	request.InstanceId = d.Id()
 
-	request.PreferredBackupTime = "03:00Z-04:00Z"
+	request.PreferredBackupTime = "01:00Z-02:00Z"
 	request.PreferredBackupPeriod = "Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday"
 
 	if _, err := conn.ModifyBackupPolicy(request); err != nil {

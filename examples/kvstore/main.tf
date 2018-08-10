@@ -3,7 +3,7 @@ data "alicloud_kvstore_instances" "rkv_instance" {
 }
 
 data "alicloud_zones" "default" {
-  available_resource_creation = "kvstore"
+  available_resource_creation = "KVStore"
 }
 
 // VPC Resource for Module
@@ -30,9 +30,9 @@ resource "alicloud_kvstore_instance" "myredis" {
 }
 
 resource "alicloud_kvstore_security_ips" "rediswhitelist" {
-  instance_id         = "${alicloud_kvstore_instance.myredis.id}"
-  security_ips        = ["1.1.1.1", "2.2.2.2", "3.3.3.3"]
-  security_group_name = "mysecgroup"
+  instance_id  = "${alicloud_kvstore_instance.myredis.id}"
+  security_ips = ["1.1.1.1", "2.2.2.2", "3.3.3.3"]
+  group_name   = "mysecgroup"
 }
 
 resource "alicloud_kvstore_backup_policy" "redisbackup" {

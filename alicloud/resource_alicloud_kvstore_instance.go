@@ -257,7 +257,6 @@ func buildKVStoreCreateRequest(d *schema.ResourceData, meta interface{}) (*r_kvs
 	request.RegionId = string(getRegion(d, meta))
 	request.EngineVersion = Trim(d.Get("engine_version").(string))
 	request.InstanceClass = Trim(d.Get("instance_class").(string))
-	request.NetworkType = Trim(d.Get("network_type").(string))
 	request.ChargeType = Trim(d.Get("instance_charge_type").(string))
 	request.Password = Trim(d.Get("password").(string))
 	request.BackupId = Trim(d.Get("backup_id").(string))
