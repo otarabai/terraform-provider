@@ -127,6 +127,18 @@ func resourceAlicloudKVStoreBackupPolicyUpdate(d *schema.ResourceData, meta inte
 }
 
 func resourceAlicloudKVStoreBackupPolicyDelete(d *schema.ResourceData, meta interface{}) error {
-	// There is no explicit delete, only update with modified backup policy
+	// In case of a delete we are resetting to default values which is Monday - Sunday each 3am-4am
+	client := meta.(*AliyunClient)
+	conn := client.rkvconn
+	request := r_kvstore.CreateModifyBackupPolicyRequest()
+	request.InstanceId = d.Id()
+
+	request.PreferredBackupTime = "03:00Z-04:00Z"
+	request.PreferredBackupPeriod = "Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday"
+
+	if _, err := conn.ModifyBackupPolicy(request); err != nil {
+		return err
+	}
+
 	return nil
 }
