@@ -371,9 +371,9 @@ func (c *Config) fcConn() (client *fc.Client, err error) {
 }
 
 func (c *Config) rkvConn() (*r_kvstore.Client, error) {
-	endpoint := LoadEndpoint(c.RegionId, RKVCode)
+	endpoint := LoadEndpoint(c.RegionId, KVSTORECode)
 	if endpoint != "" {
-		endpoints.AddEndpointMapping(c.RegionId, string(RKVCode), endpoint)
+		endpoints.AddEndpointMapping(c.RegionId, string(KVSTORECode), endpoint)
 	}
 	return r_kvstore.NewClientWithOptions(c.RegionId, getSdkConfig(), c.getAuthCredential(false))
 }

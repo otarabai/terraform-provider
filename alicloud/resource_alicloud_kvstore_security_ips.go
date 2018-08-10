@@ -30,7 +30,7 @@ func resourceAlicloudKVStoreSecurityIPs() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Required: true,
 			},
-			"security_group_name": &schema.Schema{
+			"group_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -44,7 +44,7 @@ func resourceAlicloudKVStoreSecurityIPsCreate(d *schema.ResourceData, meta inter
 
 	request := r_kvstore.CreateModifySecurityIpsRequest()
 	request.InstanceId = d.Get("instance_id").(string)
-	request.SecurityIpGroupName = d.Get("security_group_name").(string)
+	request.SecurityIpGroupName = d.Get("group_name").(string)
 	request.SecurityIps = LOCAL_HOST_IP
 
 	if len(d.Get("security_ips").(*schema.Set).List()) > 0 {
@@ -93,12 +93,15 @@ func resourceAlicloudKVStoreSecurityIPsRead(d *schema.ResourceData, meta interfa
 	for _, secGroup := range attribs.SecurityIpGroups.SecurityIpGroup {
 		if secGroup.SecurityIpGroupName == secGroupName {
 			d.Set("instance_id", instanceId)
-			d.Set("security_group_name", secGroup.SecurityIpGroupName)
+			d.Set("group_name", secGroup.SecurityIpGroupName)
 			d.Set("security_ips", strings.Split(secGroup.SecurityIpList, COMMA_SEPARATED))
 			return nil
 		}
 	}
-	return fmt.Errorf("Security Group %v does not exist", secGroupName)
+
+	// No specified security group name
+	d.SetId("")
+	return nil
 }
 
 func resourceAlicloudKVStoreSecurityIPsUpdate(d *schema.ResourceData, meta interface{}) error {
@@ -106,7 +109,7 @@ func resourceAlicloudKVStoreSecurityIPsUpdate(d *schema.ResourceData, meta inter
 	conn := client.rkvconn
 	instanceId := strings.Split(d.Id(), COLON_SEPARATED)[0]
 
-	if d.HasChange("security_group_name") || d.HasChange("security_ips") {
+	if d.HasChange("group_name") || d.HasChange("security_ips") {
 		ipstr := strings.Join(expandStringList(d.Get("security_ips").(*schema.Set).List())[:], COMMA_SEPARATED)
 		if ipstr == "" {
 			ipstr = LOCAL_HOST_IP
@@ -115,7 +118,7 @@ func resourceAlicloudKVStoreSecurityIPsUpdate(d *schema.ResourceData, meta inter
 		request := r_kvstore.CreateModifySecurityIpsRequest()
 		request.InstanceId = instanceId
 		request.SecurityIps = ipstr
-		request.SecurityIpGroupName = d.Get("security_group_name").(string)
+		request.SecurityIpGroupName = d.Get("group_name").(string)
 		if _, err := conn.ModifySecurityIps(request); err != nil {
 			return err
 		}
@@ -135,7 +138,7 @@ func resourceAlicloudKVStoreSecurityIPsDelete(d *schema.ResourceData, meta inter
 
 	request := r_kvstore.CreateModifySecurityIpsRequest()
 	request.InstanceId = instanceId
-	request.SecurityIpGroupName = d.Get("security_group_name").(string)
+	request.SecurityIpGroupName = d.Get("group_name").(string)
 	request.ModifyMode = "Delete"
 	request.SecurityIps = ipstr
 	if _, err := conn.ModifySecurityIps(request); err != nil {

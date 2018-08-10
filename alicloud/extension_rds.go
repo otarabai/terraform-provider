@@ -20,7 +20,7 @@ type DBAccountType string
 
 const (
 	DBAccountNormal = DBAccountType("Normal")
-	Super           = DBAccountType("Super")
+	DBAccountSuper  = DBAccountType("Super")
 )
 
 var WEEK_ENUM = []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}

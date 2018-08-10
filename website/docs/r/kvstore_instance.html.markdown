@@ -31,7 +31,6 @@ For more information, see [Instance type table](https://www.alibabacloud.com/hel
 * `availability_zone` - (Optional) The Zone to launch the DB instance.
 * `instance_charge_type` - (Optional) Valid values are `PrePaid`, `PostPaid`, Default to `PostPaid`.
 * `period` - (Optional) The duration that you will buy DB instance (in month). It is valid when instance_charge_type is `PrePaid`. Valid values: [1~9], 12, 24, 36. Default to 1.
-* `network_type`- (Optional) The network type to choose: `CLASSIC` or `VPC`. Defaults to `CLASSIC`
 * `instance_type` - (Optional) The engine to use: `Redis` or `Memcache`. Defaults to `Redis` 
 * `engine_version`- (Optional) Engine version. Supported values: 2.8 and 4.0. Default value: 2.8.
 

@@ -47,9 +47,7 @@ type NetworkType string
 
 const (
 	Classic = NetworkType("Classic")
-	CLASSIC = NetworkType("CLASSIC")
 	Vpc     = NetworkType("Vpc")
-	VPC     = NetworkType("VPC")
 )
 
 type TimeType string
@@ -110,7 +108,7 @@ const (
 	ResourceTypeVSwitch  = ResourceType("VSwitch")
 	ResourceTypeRds      = ResourceType("Rds")
 	IoOptimized          = ResourceType("IoOptimized")
-	ResourceTypeRkv      = ResourceType("kvstore")
+	ResourceTypeRkv      = ResourceType("KVStore")
 )
 
 type InternetChargeType string
@@ -335,7 +333,7 @@ const (
 	OTSCode     = ServiceCode("OTS")
 	LOGCode     = ServiceCode("LOG")
 	FCCode      = ServiceCode("FC")
-	RKVCode     = ServiceCode("RKV")
+	KVSTORECode = ServiceCode("KVSTORE")
 )
 
 //xml

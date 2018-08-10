@@ -2,6 +2,7 @@ package alicloud
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -57,20 +58,6 @@ func resourceAlicloudKVStoreInstance() *schema.Resource {
 				Default:          1,
 				DiffSuppressFunc: rkvPostPaidDiffSuppressFunc,
 			},
-
-			"network_type": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "CLASSIC",
-				ValidateFunc: validateAllowedStringValue([]string{
-					string(CLASSIC),
-					string(VPC),
-				}),
-				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-					return true
-				},
-				Deprecated: "Field 'network_type' has been deprecated from provider version 1.5.0.",
-			},
 			"instance_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -98,7 +85,6 @@ func resourceAlicloudKVStoreInstance() *schema.Resource {
 			},
 			"connection_domain": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"port": &schema.Schema{
@@ -108,8 +94,8 @@ func resourceAlicloudKVStoreInstance() *schema.Resource {
 			},
 			"private_ip": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
+				Optional: true,
 			},
 			"backup_id": &schema.Schema{
 				Type:     schema.TypeString,
@@ -165,10 +151,23 @@ func resourceAlicloudKVStoreInstanceUpdate(d *schema.ResourceData, meta interfac
 		d.SetPartial("instance_class")
 	}
 
+	request := r_kvstore.CreateModifyInstanceAttributeRequest()
+	request.InstanceId = d.Id()
+	update := false
 	if d.HasChange("instance_name") {
-		request := r_kvstore.CreateModifyInstanceAttributeRequest()
-		request.InstanceId = d.Id()
 		request.InstanceName = d.Get("instance_name").(string)
+		update = true
+
+		d.SetPartial("instance_name")
+	}
+
+	if d.HasChange("password") {
+		request.NewPassword = d.Get("password").(string)
+		update = true
+		d.SetPartial("password")
+	}
+
+	if update {
 		// wait instance status is Normal before modifying
 		if err := client.WaitForRKVInstance(d.Id(), Normal, DefaultLongTimeout); err != nil {
 			return fmt.Errorf("WaitForInstance %s got error: %#v", Running, err)
@@ -180,8 +179,6 @@ func resourceAlicloudKVStoreInstanceUpdate(d *schema.ResourceData, meta interfac
 		if err := client.WaitForRKVInstance(d.Id(), Normal, DefaultLongTimeout); err != nil {
 			return fmt.Errorf("WaitForInstance %s got error: %#v", Running, err)
 		}
-
-		d.SetPartial("instance_name")
 	}
 
 	d.Partial(false)
@@ -192,7 +189,7 @@ func resourceAlicloudKVStoreInstanceRead(d *schema.ResourceData, meta interface{
 	client := meta.(*AliyunClient)
 	instance, err := client.DescribeRKVInstanceById(d.Id())
 	if err != nil {
-		if IsExceptedError(err, InvalidKVStoreInstanceIdNotFound) {
+		if NotFoundError(err) {
 			d.SetId("")
 			return nil
 		}
@@ -264,7 +261,9 @@ func buildKVStoreCreateRequest(d *schema.ResourceData, meta interface{}) (*r_kvs
 	request.ChargeType = Trim(d.Get("instance_charge_type").(string))
 	request.Password = Trim(d.Get("password").(string))
 	request.BackupId = Trim(d.Get("backup_id").(string))
-
+	if port, ok := d.GetOk("port"); ok && port.(int) != 0 {
+		request.Port = strconv.Itoa(port.(int))
+	}
 	if PayType(request.ChargeType) == PrePaid {
 		request.Period = d.Get("Period").(string)
 	}
@@ -273,14 +272,13 @@ func buildKVStoreCreateRequest(d *schema.ResourceData, meta interface{}) (*r_kvs
 		request.ZoneId = Trim(zone.(string))
 	}
 
-	vswitchID := Trim(d.Get("vswitch_id").(string))
-	if vswitchID != "" {
-		request.VSwitchId = vswitchID
+	request.NetworkType = strings.ToUpper(string(Classic))
+	if vswitchId, ok := d.GetOk("vswitch_id"); ok && vswitchId.(string) != "" {
+		request.VSwitchId = vswitchId.(string)
 		request.NetworkType = strings.ToUpper(string(Vpc))
-		d.Set("network_type", string(VPC))
 
 		// check vswitchId in zone
-		vsw, err := client.DescribeVswitch(vswitchID)
+		vsw, err := client.DescribeVswitch(vswitchId.(string))
 		if err != nil {
 			return nil, fmt.Errorf("DescribeVSwitch got an error: %#v", err)
 		}

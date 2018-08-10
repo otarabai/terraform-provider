@@ -13,6 +13,9 @@ func (client *AliyunClient) DescribeRKVInstanceById(id string) (instance *r_kvst
 	request.InstanceId = id
 	resp, err := client.rkvconn.DescribeInstanceAttribute(request)
 	if err != nil {
+		if IsExceptedError(err, InvalidKVStoreInstanceIdNotFound) {
+			return nil, GetNotFoundErrorFromString(fmt.Sprintf("DB instance %s is not found.", id))
+		}
 		return nil, err
 	}
 
@@ -31,7 +34,7 @@ func (client *AliyunClient) WaitForRKVInstance(instanceId string, status Status,
 	}
 	for {
 		instance, err := client.DescribeRKVInstanceById(instanceId)
-		if err != nil && !IsExceptedError(err, InvalidKVStoreInstanceIdNotFound) {
+		if err != nil && !NotFoundError(err) {
 			return err
 		}
 
